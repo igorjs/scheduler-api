@@ -1,26 +1,44 @@
 import { Injectable } from '@nestjs/common';
+import { DataService } from 'src/data/data.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
 @Injectable()
 export class SchedulesService {
+  constructor(private readonly db: DataService) {}
+
   create(createScheduleDto: CreateScheduleDto) {
-    return 'This action adds a new schedule';
+    return this.db.schedule.create({
+      data: createScheduleDto,
+    });
   }
 
   findAll() {
-    return `This action returns all schedules`;
+    return this.db.schedule.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} schedule`;
+  findOne(id: string) {
+    return this.db.schedule.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
   }
 
-  update(id: number, updateScheduleDto: UpdateScheduleDto) {
-    return `This action updates a #${id} schedule`;
+  update(id: string, updateScheduleDto: UpdateScheduleDto) {
+    return this.db.schedule.update({
+      data: updateScheduleDto,
+      where: {
+        id,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} schedule`;
+  remove(id: string) {
+    return this.db.schedule.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

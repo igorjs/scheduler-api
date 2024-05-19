@@ -1,26 +1,44 @@
 import { Injectable } from '@nestjs/common';
+import { DataService } from 'src/data/data.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
+  constructor(private readonly db: DataService) {}
+
   create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+    return this.db.task.create({
+      data: createTaskDto,
+    });
   }
 
   findAll() {
-    return `This action returns all tasks`;
+    return this.db.task.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  findOne(id: string) {
+    return this.db.task.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  update(id: string, updateTaskDto: UpdateTaskDto) {
+    return this.db.task.update({
+      data: updateTaskDto,
+      where: {
+        id,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  remove(id: string) {
+    return this.db.task.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
