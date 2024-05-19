@@ -1,8 +1,10 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class DataService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger(DataService.name);
+
   constructor() {
     super({
       log: [
@@ -15,9 +17,9 @@ export class DataService extends PrismaClient implements OnModuleInit {
   }
   async onModuleInit() {
     this.$on('query' as never, async (e: Prisma.QueryEvent) => {
-      console.log('Query: ' + e.query);
-      console.log('Params: ' + e.params);
-      console.log('Duration: ' + e.duration + 'ms');
+      this.logger.debug('Query: ' + e.query);
+      this.logger.debug('Params: ' + e.params);
+      this.logger.debug('Duration: ' + e.duration + 'ms');
     });
     await this.$connect();
   }

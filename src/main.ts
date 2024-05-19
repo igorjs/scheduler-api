@@ -1,6 +1,6 @@
 import compression from '@fastify/compress';
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -10,20 +10,36 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+
+// Filters
+import { PrismaClientExceptionFilter } from 'src/core/filters/prisma-exception.filter';
+
+// Modules
+import { GlobalExceptionFilter } from 'src/core/filters/global-exception.filter';
 import { AppModule } from './app.module';
+
+const PORT = process.env.PORT || 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+  const { httpAdapter } = app.get(HttpAdapterHost);
+
+  // Setting API Path
+  app.setGlobalPrefix('api');
 
   // Enable Service configs
   app.enableCors();
   app.enableVersioning();
 
-  // Enable Validation Middleware
+  // Enable Filters, Guards, and Pipes
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useGlobalFilters(
+    new GlobalExceptionFilter(httpAdapter),
+    new PrismaClientExceptionFilter(httpAdapter),
+  );
 
   // Add Swagger documentation
   const config = new DocumentBuilder()
@@ -42,6 +58,8 @@ async function bootstrap() {
 
   // Register other middlewares
   await app.register(compression);
-  await app.listen(3000, '0.0.0.0');
+
+  // Start server
+  await app.listen(PORT, '0.0.0.0');
 }
 bootstrap();
