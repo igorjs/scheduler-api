@@ -55,10 +55,8 @@ export class ScheduleController {
   async findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
     const schedule = await this.scheduleService.findOne(uuid);
 
-    console.info('schedule', schedule);
-
     if (!schedule?.id) {
-      throw new NotFoundException();
+      throw new NotFoundException('Schedule not found with ID: ' + uuid);
     }
     return schedule;
   }
@@ -74,7 +72,7 @@ export class ScheduleController {
     const schedule = await this.scheduleService.update(uuid, updateScheduleDto);
 
     if (!schedule?.id) {
-      throw new NotFoundException();
+      throw new NotFoundException('Schedule not found with ID: ' + uuid);
     }
     return schedule;
   }
@@ -87,7 +85,7 @@ export class ScheduleController {
     const schedule = await this.scheduleService.remove(uuid);
 
     if (!schedule?.id) {
-      throw new NotFoundException();
+      throw new NotFoundException('Schedule not found with ID: ' + uuid);
     }
     return schedule;
   }
