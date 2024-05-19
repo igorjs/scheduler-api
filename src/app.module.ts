@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { SchedulesModule } from './schedules/schedules.module';
-import { TasksModule } from './tasks/tasks.module';
+import { SchedulesModule } from './schedule/schedule.module';
+import { TasksModule } from './task/task.module';
 import { DataService } from './data/data.service';
 
 @Module({
