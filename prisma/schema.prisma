@@ -27,7 +27,7 @@ model Schedule {
   endTime    DateTime @map("end_time")
   tasks      Task[]
   createdAt  DateTime @map("created_at") @default(now())
-  updatedAt  DateTime @map("updated_at") @updatedAt
+  updatedAt  DateTime @map("updated_at") @default(now()) @updatedAt
 }
 
 model Task {
@@ -45,7 +45,7 @@ model Task {
   duration   Int      @map("duration")
   type       TaskType @map("type")
   createdAt  DateTime @map("created_at") @default(now())
-  updatedAt  DateTime @map("updated_at") @updatedAt
+  updatedAt  DateTime @map("updated_at") @default(now()) @updatedAt
 }
 
 enum TaskType {

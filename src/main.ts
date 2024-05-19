@@ -1,14 +1,15 @@
+import compression from '@fastify/compress';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import {
-  SwaggerModule,
   DocumentBuilder,
   SwaggerDocumentOptions,
+  SwaggerModule,
 } from '@nestjs/swagger';
-import compression from '@fastify/compress';
 import { AppModule } from './app.module';
 // import { VersioningType } from '@nestjs/common';
 
@@ -21,6 +22,9 @@ async function bootstrap() {
   // Enable Service configs
   app.enableCors();
   app.enableVersioning();
+
+  // Enable Validation Middleware
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // Add Swagger documentation
   const config = new DocumentBuilder()
