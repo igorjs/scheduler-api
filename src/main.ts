@@ -10,12 +10,17 @@ import {
 } from '@nestjs/swagger';
 import compression from '@fastify/compress';
 import { AppModule } from './app.module';
+// import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+
+  // Enable Service configs
+  app.enableCors();
+  app.enableVersioning();
 
   // Add Swagger documentation
   const config = new DocumentBuilder()

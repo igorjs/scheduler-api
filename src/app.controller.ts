@@ -4,10 +4,10 @@ import { Controller, Get, Header, HttpCode, HttpStatus } from '@nestjs/common';
 export class AppController {
   constructor() {}
 
-  @Get()
+  @Get('healthcheck')
   @Header('Cache-Control', 'no-cache')
   @HttpCode(HttpStatus.OK)
-  index() {
-    return 'OK';
+  healthcheck() {
+    return 'healthy';
   }
 }
