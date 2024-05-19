@@ -1,24 +1,40 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { configureServer } from 'src/app.server';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import TestAgent from 'supertest/lib/agent';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
+describe('Server (e2e)', () => {
+  let app: Awaited<ReturnType<typeof configureServer>>;
+  let server: TestAgent;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
+  beforeAll(async () => {
+    app = await configureServer();
     await app.init();
+    await app.getHttpAdapter().getInstance().ready();
+    server = request(app.getHttpServer());
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await app.close();
+  });
+
+  // APP MODULE
+  it('/healthcheck (GET)', async () => {
+    const response = await server.get('/api/healthcheck');
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('healthy');
+  });
+
+  // SCHEDULE MODULE
+  it('/v1/schedules (GET)', async () => {
+    const response = await server.get('/api/v1/schedules');
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+  });
+
+  // TASK MODULE
+  it('/v1/tasks (GET)', async () => {
+    const response = await server.get('/api/v1/tasks');
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 });
