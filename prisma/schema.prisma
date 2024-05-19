@@ -14,25 +14,41 @@ datasource db {
 }
 
 model Schedule {
-  id         String   @default(uuid()) @id
-  account_id Int
-  agent_id   Int
-  start_time DateTime
-  end_time   DateTime
+  @@map("schedules")
+  @@index([accountId, agentId])
+  @@index([accountId])
+  @@index([agentId])
+  @@index([startTime, endTime])
+
+  id         String   @map("id") @default(uuid()) @id
+  accountId  Int      @map("account_id")
+  agentId    String   @map("agent_id")
+  startTime  DateTime @map("start_time")
+  endTime    DateTime @map("end_time")
   tasks      Task[]
+  createdAt  DateTime @map("created_at") @default(now())
+  updatedAt  DateTime @map("updated_at") @updatedAt
 }
 
 model Task {
-  id          String    @default(uuid()) @id
-  account_id  Int
-  schedule_id String
-  schedule    Schedule  @relation(fields: [schedule_id], references: [id])
-  start_time  DateTime
-  duration    Int?
-  type        TaskType  @default(work)
+  @@map("tasks")
+  @@index([accountId, scheduleId])
+  @@index([accountId])
+  @@index([type])
+  @@index([startTime, duration])
+
+  id         String   @map("id") @default(uuid()) @id
+  accountId  Int      @map("account_id")
+  scheduleId String   @map("schedule_id")
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  startTime  DateTime @map("start_time")
+  duration   Int      @map("duration")
+  type       TaskType @map("type") @default(WORK)
+  createdAt  DateTime @map("created_at") @default(now())
+  updatedAt  DateTime @map("updated_at") @updatedAt
 }
 
 enum TaskType {
-  break
-  work
+  BREAK @map("break")
+  WORK  @map("work")
 }
