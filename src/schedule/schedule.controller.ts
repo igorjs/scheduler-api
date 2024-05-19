@@ -1,46 +1,94 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateScheduleDto } from './dto/create-schedule.dto';
-import { UpdateScheduleDto } from './dto/update-schedule.dto';
-import { ScheduleService } from './schedule.service';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateScheduleDto } from 'src/schedule/dto/create-schedule.dto';
+import { UpdateScheduleDto } from 'src/schedule/dto/update-schedule.dto';
+import { ScheduleEntity } from 'src/schedule/entities/schedule.entity';
+import { ScheduleService } from 'src/schedule/schedule.service';
 
+@ApiTags('Schedules')
+@ApiProduces('application/json')
 @Controller({ version: '1', path: 'schedules' })
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
-  create(@Body() createScheduleDto: CreateScheduleDto) {
-    return this.scheduleService.create(createScheduleDto);
+  @ApiCreatedResponse({ description: 'Created', type: ScheduleEntity })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async create(@Body() createScheduleDto: CreateScheduleDto) {
+    const schedule = await this.scheduleService.create(createScheduleDto);
+
+    if (!schedule?.id) {
+      throw new BadRequestException();
+    }
+
+    return schedule;
   }
 
   @Get()
-  findAll() {
+  @ApiOkResponse({ type: ScheduleEntity, isArray: true })
+  async findAll() {
     return this.scheduleService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.scheduleService.findOne(id);
+  @Get(':uuid')
+  @ApiOkResponse({ type: ScheduleEntity })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    const schedule = await this.scheduleService.findOne(uuid);
+
+    console.info('schedule', schedule);
+
+    if (!schedule?.id) {
+      throw new NotFoundException();
+    }
+    return schedule;
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
+  @Patch(':uuid')
+  @ApiOkResponse({ description: 'Success', type: ScheduleEntity })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async update(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() updateScheduleDto: UpdateScheduleDto,
   ) {
-    return this.scheduleService.update(id, updateScheduleDto);
+    const schedule = await this.scheduleService.update(uuid, updateScheduleDto);
+
+    if (!schedule?.id) {
+      throw new NotFoundException();
+    }
+    return schedule;
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.scheduleService.remove(id);
+  @Delete(':uuid')
+  @ApiOkResponse({ description: 'Success' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    const schedule = await this.scheduleService.remove(uuid);
+
+    if (!schedule?.id) {
+      throw new NotFoundException();
+    }
+    return schedule;
   }
 }

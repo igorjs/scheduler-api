@@ -1,46 +1,95 @@
 import {
-  Controller,
-  Get,
-  Post,
+  BadRequestException,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  NotFoundException,
+  Param,
   ParseUUIDPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateTaskDto } from 'src/task/dto/create-task.dto';
+import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
+import { TaskEntity } from 'src/task/entities/task.entity';
+import { TaskService } from 'src/task/task.service';
 
+@ApiTags('Tasks')
+@ApiProduces('application/json')
 @Controller({ version: '1', path: 'tasks' })
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(createTaskDto);
+  @ApiCreatedResponse({ type: TaskEntity })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async create(@Body() createTaskDto: CreateTaskDto) {
+    const task = await this.taskService.create(createTaskDto);
+
+    if (!task?.id) {
+      throw new BadRequestException();
+    }
+
+    return task;
   }
 
   @Get()
-  findAll() {
+  @ApiOkResponse({ type: TaskEntity, isArray: true })
+  async findAll() {
     return this.taskService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.taskService.findOne(id);
+  @Get(':uuid')
+  @ApiOkResponse({ type: TaskEntity })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findOne(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    const task = await this.taskService.findOne(uuid);
+
+    if (!task?.id) {
+      throw new NotFoundException();
+    }
+
+    return task;
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
+  @Patch(':uuid')
+  @ApiOkResponse({ description: 'Success', type: TaskEntity })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async update(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
-    return this.taskService.update(id, updateTaskDto);
+    const task = await this.taskService.update(uuid, updateTaskDto);
+
+    if (!task?.id) {
+      throw new NotFoundException();
+    }
+
+    return task;
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.taskService.remove(id);
+  @Delete(':uuid')
+  @ApiOkResponse({ description: 'Success' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async remove(@Param('uuid', ParseUUIDPipe) uuid: string) {
+    const task = await this.taskService.remove(uuid);
+
+    if (!task?.id) {
+      throw new NotFoundException();
+    }
+
+    return task;
   }
 }

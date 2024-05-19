@@ -11,7 +11,6 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-// import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -24,7 +23,7 @@ async function bootstrap() {
   app.enableVersioning();
 
   // Enable Validation Middleware
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   // Add Swagger documentation
   const config = new DocumentBuilder()

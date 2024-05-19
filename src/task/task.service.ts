@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataService } from 'src/data/data.service';
+import { TaskEntity } from 'src/task/entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
@@ -7,38 +8,26 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TaskService {
   constructor(private readonly db: DataService) {}
 
-  create(createTaskDto: CreateTaskDto) {
-    return this.db.task.create({
-      data: createTaskDto,
-    });
+  async create(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+    return this.db.task.create({ data: createTaskDto });
   }
 
-  findAll() {
+  async findAll(): Promise<Array<TaskEntity>> {
     return this.db.task.findMany();
   }
 
-  findOne(id: string) {
-    return this.db.task.findFirstOrThrow({
-      where: {
-        id,
-      },
-    });
+  async findOne(uuid: string): Promise<TaskEntity> {
+    return this.db.task.findUniqueOrThrow({ where: { id: uuid } });
   }
 
-  update(id: string, updateTaskDto: UpdateTaskDto) {
-    return this.db.task.update({
-      data: updateTaskDto,
-      where: {
-        id,
-      },
-    });
+  async update(
+    uuid: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<TaskEntity> {
+    return this.db.task.update({ data: updateTaskDto, where: { id: uuid } });
   }
 
-  remove(id: string) {
-    return this.db.task.delete({
-      where: {
-        id,
-      },
-    });
+  async remove(uuid: string): Promise<TaskEntity> {
+    return this.db.task.delete({ where: { id: uuid } });
   }
 }
