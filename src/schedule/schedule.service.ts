@@ -4,7 +4,7 @@ import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
 @Injectable()
-export class SchedulesService {
+export class ScheduleService {
   constructor(private readonly db: DataService) {}
 
   create(createScheduleDto: CreateScheduleDto) {

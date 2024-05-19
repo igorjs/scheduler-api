@@ -4,7 +4,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
-export class TasksService {
+export class TaskService {
   constructor(private readonly db: DataService) {}
 
   create(createTaskDto: CreateTaskDto) {
