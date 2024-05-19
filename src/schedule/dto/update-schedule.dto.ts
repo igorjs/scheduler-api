@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateScheduleDto } from './create-schedule.dto';
+import { CreateScheduleDto } from 'src/schedule/dto/create-schedule.dto';
 
 export class UpdateScheduleDto extends PartialType(CreateScheduleDto) {}

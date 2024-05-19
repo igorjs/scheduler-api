@@ -12,7 +12,7 @@ export class TaskEntity implements Task {
   startTime: Date;
   @ApiProperty()
   duration: number;
-  @ApiProperty()
+  @ApiProperty({ enum: TaskType, enumName: 'TaskTypeEnum' })
   type: TaskType;
   @ApiProperty()
   createdAt: Date;

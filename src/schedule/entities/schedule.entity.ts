@@ -7,7 +7,7 @@ export class ScheduleEntity implements Schedule {
   @ApiProperty()
   accountId: number;
   @ApiProperty()
-  agentId: string;
+  agentId: number;
   @ApiProperty()
   startTime: Date;
   @ApiProperty()

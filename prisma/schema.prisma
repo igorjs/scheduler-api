@@ -17,7 +17,7 @@ datasource db {
 model Schedule {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
   accountId Int      @map("account_id")
-  agentId   String   @map("agent_id")
+  agentId   Int      @map("agent_id")
   startTime DateTime @map("start_time")
   endTime   DateTime @map("end_time")
   tasks     Task[]

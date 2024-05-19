@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Schedule } from '@prisma/client';
-import { IsDate, IsInt, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateScheduleDto implements Partial<Schedule> {
   @IsInt()
@@ -11,14 +11,14 @@ export class CreateScheduleDto implements Partial<Schedule> {
   @IsInt()
   @IsNotEmpty()
   @ApiProperty()
-  agentId: string;
+  agentId: number;
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   @ApiProperty()
   startTime: Date;
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   @ApiProperty()
   endTime: Date;

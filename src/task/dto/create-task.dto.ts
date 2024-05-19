@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Task, TaskType } from '@prisma/client';
 import {
-  IsDate,
+  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -20,7 +20,7 @@ export class CreateTaskDto implements Partial<Task> {
   @ApiProperty()
   scheduleId: string;
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   @ApiProperty()
   startTime: Date;
@@ -32,6 +32,6 @@ export class CreateTaskDto implements Partial<Task> {
 
   @IsEnum(TaskType)
   @IsNotEmpty()
-  @ApiProperty({ enum: Object.values(TaskType) })
+  @ApiProperty({ enum: TaskType, enumName: 'TaskTypeEnum' })
   type: TaskType;
 }
