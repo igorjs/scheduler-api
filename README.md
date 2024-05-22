@@ -1,35 +1,68 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Scheduler API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Table of Contents
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- [Problem Description](#problem-description)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Running Docker](#running-docker)
+- [Seeding the Database](#seeding-the-database)
+- [Running the app](#running-the-app)
+- [Testing](#testing)
+- [Future Improvements](#future-improvements)
 
-## Description
+## Problem Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Implement API endpoints for managing schedules and tasks using TypeScript.
+
+The project involves designing and building RESTful endpoints to handle scheduling and task management.
+
+See below are the details of the resources:
+
+**Schedule**
+
+- `id`: Universally unique identiﬁer (UUID) for the schedule.
+- `account_id`: Integer representing the account associated with the schedule.
+- `agent_id`: Integer representing the agent assigned to the schedule.
+- `start_time`: DateTime indicating the start time of the schedule.
+- `end_time`: DateTime indicating the end time of the schedule.
+
+**Tasks**
+
+- `id`: UUID for the task.
+- `account_id`: Integer representing the account associated with the task.
+- `schedule_id`: UUID referencing the schedule to which the task belongs.
+- `start_time`: DateTime indicating the start time of the task.
+- `duration`: Integer representing the duration of the task.
+- `type`: String enumeration with values 'break' or 'work', indicating the type of task.
+
+> There's a one-to-many relationship between Schedule and Tasks, where a Schedule can have multiple Tasks associated.
+
+## Requirements
+
+1. Docker Desktop (or similar) with support for docker-compose
+2. NodeJS v20
 
 ## Installation
 
 ```bash
 $ npm install
+```
+
+## Running Docker
+
+```bash
+# docker full solution -> will install the app dependencies and run it in watch mode
+$ docker compose up -d
+
+# database only
+$ docker compose up -d postgres
+```
+
+## Seeding the Database
+
+```bash
+$ npx prisma db seed
 ```
 
 ## Running the app
@@ -45,7 +78,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Testing
 
 ```bash
 # unit tests
@@ -58,16 +91,35 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## Future Improvements
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. Refactor Unit Tests
 
-## Stay in touch
+   - Some unit test are not properly written and therefore should be improved.
+   - Make use of the framework's automock feature.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. Write more E2E tests
 
-## License
+   - At the moment, I'm only testing the "findAll" method of each resource.
+   - Create specific DB configuration for dev and testing
 
-Nest is [MIT licensed](LICENSE).
+3. Improve API configurtion and security
+
+   - Take leverage of the framework's builtin modules
+
+     - Add [Helmet](https://docs.nestjs.com/security/helmet) security headers
+     - Add [Cross-site request forgery](https://docs.nestjs.com/security/csrf) security
+     - Add [Rate Limiting](https://docs.nestjs.com/security/rate-limiting)
+     - Add [Cache](https://docs.nestjs.com/techniques/caching)
+     - Add [Configuration](https://docs.nestjs.com/techniques/configuration)
+     - Add [Healthchecks](https://docs.nestjs.com/recipes/terminus) (replace current hard-coded implementation)
+     - Add [Documentation](https://docs.nestjs.com/recipes/documentation) for devs
+
+   - Implement HTTPS
+   - Implement [Authentication](https://docs.nestjs.com/security/authentication) and [Authorization](https://docs.nestjs.com/security/authorization) with [Auth Guards](https://docs.nestjs.com/guards#authorization-guard). Move them to an Auth module
+
+   - Implement better [Exception Filters](https://docs.nestjs.com/exception-filters)
+
+4. Database
+   - Manage dotenv files per environment
+   - Improve security of the database
